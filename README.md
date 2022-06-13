@@ -181,6 +181,41 @@ Brownie Points
    ```bash
    pulumi config set databaseStack hangnt1001/database/dev
    ```
+
+   There is a bug of authenticating against a RDS instance usinng IAM from an ECS (fargate) containner is not working when the permissions are set via thhe execution role policy
+
+   Create a policy rds-db: connnect 
+
+   ```bash
+   {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "rds-db:connect"
+                ],
+                "Resource": [
+                    "arn:aws:rds-db:${db_region}:${aws_account}:dbuser:${database_rid}/${database_user}"
+                ]
+            }
+        ]
+    }
+
+   ```
+   When I attach this policy directly on the execution role, permission to connect is denied. Something like below
+
+   ```bash
+   {"code":"ER_ACCESS_DENIED_ERROR","errno":1045,"sqlState":"28000","sqlMessage":"Access denied for user 'myVeve'@'172.28.159.112' (using password: NO)"}
+   ```
+
+    Workaround by attach this exact policy to an IAM user and add the access keys to the environment of the container, connnecting will be working fine. Link ref: https://github.com/aws/amazon-ecs-agent/issues/1604
+
+
+    ```bash
+   pulumi config set AWS_ACCESS_KEY_ID --secret <your-iam-user-access-key-id>
+   pulumi config set AWS_SECRET_ACCESS_KEY --secret <your-iam-user-secret-key>
+   ```
  
 1. Deploy the application stack
 

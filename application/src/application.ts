@@ -14,6 +14,8 @@ export interface ApplicationArgs {
 
     dbHost: Input<string>;
     awsRegion: Input<string>;
+    awsAccessKey: Input<string>;
+    awsSecretKey: Input<string>;
     dbUsername: Input<string>;
     dbName: Input<string>;
 
@@ -144,35 +146,6 @@ export class Application extends ComponentResource {
                 Name: `${args.description} ECS service Role`,
             }
         });
-        const rdsDbConnectPolicy = new aws.iam.Policy(`${name}-rds-db-connect`, {
-            path: '/',
-            description: 'IAM policy to allow to connect to RDS',
-            policy: JSON.stringify({
-                Version: '2012-10-17',
-                Statement: [{
-                    Action: [
-                        "rds-db:connect"
-                    ],
-                    Resource: "*",
-                    Effect: 'Allow'
-                }]
-            }),
-            tags: {
-                ...args.baseTags,
-                Name: `${args.description} RDS Connect policy`,
-            }
-        }); 
-        new aws.iam.RolePolicyAttachment(`${name}-rds-db-connect`, {
-            role: ecsTaskRole.name,
-            policyArn: rdsDbConnectPolicy.arn
-        });
-        const defaultECSTaskRole = pulumi.output(aws.iam.getPolicy({
-            name: "AmazonECSTaskExecutionRolePolicy"
-        }));
-        new aws.iam.RolePolicyAttachment(`${name}-default-ecs-task`, {
-            role: ecsTaskRole.name,
-            policyArn: defaultECSTaskRole.arn
-        });
         this.fargateService = new awsx.ecs.FargateService(`${name}-service`, {
             cluster: this.cluster,
             assignPublicIp: false,
@@ -202,6 +175,14 @@ export class Application extends ComponentResource {
                                 name: "DB_NAME",
                                 value: args.dbName,
                             },
+                            {
+                                name: "AWS_ACCESS_KEY_ID",
+                                value: args.awsAccessKey
+                            },
+                            {
+                                name: "AWS_SECRET_ACCESS_KEY",
+                                value: args.awsSecretKey
+                            }
                         ],
                     },
                 },

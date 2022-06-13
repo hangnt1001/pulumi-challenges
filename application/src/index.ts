@@ -7,7 +7,8 @@ const config = new Config();
 
 const networkingStack = new StackReference(config.require("networkingStack"));
 const databaseStack = new StackReference(config.require("databaseStack"));
-
+const awsAccessKey = config.requireSecret("AWS_ACCESS_KEY_ID");
+const awsSecretKey = config.requireSecret("AWS_SECRET_ACCESS_KEY");
 const baseTags = {
     Project: "Veve Demo",
     PulumiStack: getStack(),
@@ -34,6 +35,8 @@ const app = new Application("app", {
     dbName: databaseStack.getOutput("dbName"),
     dbUsername: databaseStack.getOutput("dbUsername"),
     awsRegion: "ap-southeast-1",
+    awsAccessKey: awsAccessKey,
+    awsSecretKey: awsSecretKey,
     dbHost: databaseStack.getOutput("proxyEndpoint"),
 });
 
