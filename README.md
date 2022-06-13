@@ -113,7 +113,7 @@ Brownie Points
    pulumi config set dbName myVeveDb
    ```
    
-   To be able to use RDS proxy, you needd to prepare the secret in aws secret manager and pass that secret ARN to the configure by exammple
+   To be able to use RDS proxy, you need to prepare the secret in aws secret manager and pass that secret ARN to the configure by exammple
 
    ```bash
         aws secretsmanager create-secret \
