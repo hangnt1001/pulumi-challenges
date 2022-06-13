@@ -1,0 +1,15 @@
+{
+    "name": "networking",
+    "main": "src/index.ts",
+    "devDependencies": {
+        "@types/node": "^14"
+    },
+    "dependencies": {
+        "@pulumi/pulumi": "^3.0.0",
+        "@pulumi/aws": "^5.0.0",
+        "@pulumi/awsx": "^0.40.0",
+        "ip-address": "^5.9.2",
+        "jsbn": "^1.1.0",
+        "mime": "^2.4.4"
+    }
+}
